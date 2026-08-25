@@ -332,14 +332,16 @@ class Music(commands.Cog):
 
             # Envia painel de controle automaticamente
             try:
-                channel = queue.channel or interaction.channel
-                embed = self._build_np_embed(queue, interaction.guild)
-                view = self._build_np_view(queue)
-                np_msg = await channel.send(embed=embed, view=view)
-                # Inicia atualização periódica em background
-                asyncio.create_task(
-                    self._np_updater(np_msg, queue, interaction.guild)
-                )
+                # Envia no canal de texto onde o comando foi usado
+                target_channel = interaction.channel
+                if target_channel:
+                    embed = self._build_np_embed(queue, interaction.guild)
+                    view = self._build_np_view(queue)
+                    np_msg = await target_channel.send(embed=embed, view=view)
+                    # Inicia atualização periódica em background
+                    asyncio.create_task(
+                        self._np_updater(np_msg, queue, interaction.guild)
+                    )
             except Exception as e:
                 print(f"⚠️ Falha ao enviar painel: {e}")
 
